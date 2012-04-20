@@ -71,6 +71,7 @@ module JqgridView
 	# http://www.trirand.com/jqgridwiki/doku.php?id=wiki:options 
 	def jqgrid (caption, id, url, columns = [], options = {})
  		@id = id
+    @url = url
 
      	default_options = 
         { 
@@ -98,7 +99,6 @@ module JqgridView
 			:view                => false,          
 			:edit_options 		=> {:closeOnEscape => true, :modal => true, :recreateForm => true, :width => 300, :closeAfterEdit => true,
 										:mtype => 'PUT', 
-										:onclickSubmit => Javascript.new("function(params, postdata) {params.url = '#{url}/' + postdata.#{id}_id}"),
 										:afterSubmit => Javascript.new("function(r, data) {return ERROR_HANDLER_NAME(r,data,'edit')}")},
 
 			:add_options 		=> {:closeOnEscape => true, :modal => true, :recreateForm => true, :width => 300, :closeAfterAdd => true,
@@ -506,6 +506,7 @@ module JqgridView
 		raise "Cannot override 'add_options[:onclickSubmit]' option as it is already set" 	if @grid_options[:add_options][:onclickSubmit] 	
 
 		grid_columns = "postdata.grid_columns = #{@id}_grid_columns"
+    edit_url = "params.url = '#{@url}/' + postdata.#{@id}_id"
 
 		# If the foreign id attribute is null then we remove it from postdata as this seems to be persistent across grid operations
 		# and by removing it will cause the detail grid to go empty, maybe as a result of the master grid being reloaded.
@@ -601,6 +602,16 @@ module JqgridView
 								#{control_access}
 								return postdata
 							}")	
+
+
+    @grid_options[:edit_options][:onclickSubmit] = 
+      Javascript.new("function(params, postdata) 
+              { 
+                #{edit_url}
+                #{grid_columns}
+                return postdata
+              }") 
+
 	end
 	
     # Recalculate width of grid based on parent container.

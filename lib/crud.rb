@@ -12,10 +12,8 @@ module JqgridCRUD
 		record = model_class.find(params[:id])
 		record.update_attributes(model_params(model_class, grid_columns))
 
-		# Pass back the updated data so any virtual attributes are updated.
 		record_data = {}
-		grid_columns.each {|c| record_data[c] = get_column_value(record, c).to_s}
-		grid_response(model_class, record, record_data)
+    grid_response(model_class, record)
 	end
 	
 	def grid_del (model_class)
