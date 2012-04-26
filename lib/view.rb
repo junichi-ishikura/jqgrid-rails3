@@ -174,6 +174,18 @@ module JqgridView
 
     private
  
+ 
+  # Returns js function name if key is "customFormatter" or "unformat" .
+  def gen_keyValueStr(key, value)
+    if(key == "customFormatter".to_sym)
+      return "formatter: #{value}"
+    elsif(key == "unformat".to_sym)
+      return "#{key}: #{value}"
+    else
+      return "#{key}: #{value.to_json}"
+    end
+  end
+ 
 	# Returns an array of js properties from a hash, i.e. each hash entry is converted to key: value_as_js_type
 	def js_properties (hsh)
 		hsh ? hsh.map {|key, value|  "#{key}: #{value.to_json}"} : []
